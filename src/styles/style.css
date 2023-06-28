@@ -1,3 +1,132 @@
+::-webkit-scrollbar {
+  width: 12px;
+  margin-left: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #EBECF0;
+  border-radius: 10px;
+  margin-left: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBCBCB;
+  border-radius: 10px;
+}
+
 #app-login-btn {
   width: 160px;
+}
+
+#logged-user {
+  color: white;
+}
+
+.fs16 {
+  font-size: 16px;
+}
+
+.fs18 {
+  font-size: 18px;
+}
+
+.fs24 {
+  font-size: 24px;
+}
+
+.fs28 {
+  font-size: 28px;
+}
+
+.dropdown-custom {
+  display: flex;
+  align-items: baseline;
+}
+
+.dropdown-custom__arrow_active {
+  transform: rotate(0.5turn);
+}
+
+.dropdown-custom__icon-avatar {
+  border-radius: 50%;
+  background-color: white;
+}
+
+.user-name {
+  margin-left: 10px;
+}
+
+.toast {
+  position: absolute;
+  right: 5px;
+}
+
+.task-group {
+  background-color: #EBECF0;
+  border-radius: 20px;
+  width: 400px;
+}
+
+.task-group>.task-list {
+  /* max-height: 70vh; */
+  /* overflow-y: auto; */
+}
+
+.task-group>.btn {
+  padding: 4px 8px;
+}
+
+.task-group>.btn:hover {
+  /* background-color: #fff; */
+}
+
+.task-item {
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.dropdown-item {
+  z-index: 100;
+}
+
+/* .modal {
+  position: fixed;
+  z-index: 200;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, .3);
+}
+.modal__container {
+  max-width: 100px;
+  padding: 50px;
+  background-color: whitesmoke;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+} */
+
+.modal-footer {
+  /* display: none; */
+}
+
+.modal-dialog {
+  max-width: initial;
+  margin: 1.75rem;
+}
+
+.fixed-bottom {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  max-width: initial;
+  margin: 0px;
+  color: white;
+  background-color: blue;
+}
+
+.finished-tasks {
+  padding-left: 4px;
 }
