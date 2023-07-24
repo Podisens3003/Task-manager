@@ -12,6 +12,7 @@ import { generateTestUser, generateTestTasks } from "./utils";
 import { State } from "./state";
 import { authUser } from "./services/auth";
 import { addTasksToState, renderTasks } from "./services/addTask";
+import { renderNavBar } from "./services/listOfUsers"
 
 export const appState = new State();
 
@@ -23,47 +24,75 @@ const loginForm = document.querySelector("#app-login-form");
 generateTestUser(User);
 generateTestTasks(UserTask);
 
-// loginForm.addEventListener("submit", function (e) {
-//   e.preventDefault();
-//   const formData = new FormData(loginForm);
-//   const login = formData.get("login");
-//   const password = formData.get("password");
+loginForm.addEventListener("submit", handleUserLogin);
 
-  let fieldHTMLContent = authUser(1, 1) // FIXME: не релизить
-    ? taskFieldTemplate
-    : noAccessTemplate;
+function handleUserLogin(e) {
+  e.preventDefault();
+  const formData = new FormData(document.querySelector("#app-login-form"));
+  const login = formData.get("login");
+  const password = formData.get("password");
+  const isUserAuthed = authUser(login, password); 
+
+  let fieldHTMLContent = isUserAuthed ? taskFieldTemplate : noAccessTemplate;
 
   document.querySelector("#content").innerHTML = fieldHTMLContent;
 
-  if (authUser(1, 1)) {
-    
+  if (isUserAuthed) {
     addTasksToState();
-    renderTasks()
-// console.log('id', appState.currentUser['id']);
+    renderTasks();
+    renderAvatar();
+    renderNavBar();
+    greeting(appState.currentUser.login);
+    console.log("appState", appState.currentUser);
+  }
+}
 
-    navbarSupportedContent.removeChild(loginForm);
-    navbarSupportedContent.innerHTML += loggedUserTemplate;
+function greeting(login) {
+  const name = document.querySelector(".user-name");
+  name.innerText = login;
+}
 
-    listenAvatarClick();
-    greeting(appState.currentUser.login)
-    console.log('appState', appState.currentUser)
-  } 
-// });
+function renderAvatar() {
+  navbarSupportedContent.removeChild(document.querySelector("#app-login-form"));
+  navbarSupportedContent.innerHTML += loggedUserTemplate;
 
+  if (appState.currentUser.role === "admin") {
+    const addUserOption = document.createElement("li");
+    addUserOption.innerText = "Добавить пользователя";
+    addUserOption.classList.add("dropdown-item", "add-new-user");
 
-export function greeting(login) {
-  const name = document.querySelector('.user-name');
-  name.innerText = login
+    const avatarDropdownOptions = document.querySelector(
+      "#logged-user .dropdown-menu"
+    );
+    avatarDropdownOptions.appendChild(addUserOption);
+    document.querySelector(".add-new-user").addEventListener("click", () => {
+
+    });
+  }
+
+  document.querySelector(".logout").addEventListener("click", logOut);
+
+  listenAvatarClick();
+}
+
+function logOut() {
+  appState.currentUser = null;
+  appState.tasks = [];
+  navbarSupportedContent.removeChild(document.querySelector("#logged-user"));
+  navbarSupportedContent.innerHTML += loginFormTemplate;
+  document.querySelector("#app-login-form").addEventListener("submit", handleUserLogin);
+
+  document.querySelector("#content").innerHTML = null;
 }
 
 function listenAvatarClick() {
-  const dropdown = document.querySelector('.dropdown');
-  const arrow = document.querySelector('.dropdown-custom__arrow');
+  const dropdown = document.querySelector(".dropdown");
+  const arrow = document.querySelector(".dropdown-custom__arrow");
 
-  dropdown.addEventListener('show.bs.dropdown', function () {
-    arrow.classList.add('dropdown-custom__arrow_active');
-  })
-  dropdown.addEventListener('hide.bs.dropdown', function () {
-    arrow.classList.remove('dropdown-custom__arrow_active');
-  })
+  dropdown.addEventListener("show.bs.dropdown", function () {
+    arrow.classList.add("dropdown-custom__arrow_active");
+  });
+  dropdown.addEventListener("hide.bs.dropdown", function () {
+    arrow.classList.remove("dropdown-custom__arrow_active");
+  });
 }

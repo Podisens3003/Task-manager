@@ -30,7 +30,7 @@ export class State {
 
       const tasksAtStatus = tasks
         .filter(task => task.status === taskStatus)
-        .filter(task => task.authorId === this._currentUser.id);
+        .filter(task => this.currentUser.role === "admin" ? true : task.authorId === this._currentUser.id);
 
       this._tasks[taskStatus].push(...tasksAtStatus)
     })

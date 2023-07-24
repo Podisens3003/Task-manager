@@ -1,5 +1,5 @@
 import { BaseModel } from "./BaseModel";
-import { getFromStorage, addToStorage } from "../utils";
+import { getFromStorage, addToStorage, deleteFromStorage } from "../utils";
 
 export class User extends BaseModel {
   constructor(login, password, role = "user") {
@@ -23,6 +23,15 @@ export class User extends BaseModel {
   static save(user) {
     try {
       addToStorage(user, user.storageKey);
+      return true;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+  
+  static delete(user) {
+    try {
+      deleteFromStorage(user, user.storageKey);
       return true;
     } catch (e) {
       throw new Error(e);

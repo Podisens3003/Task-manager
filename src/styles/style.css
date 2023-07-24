@@ -38,6 +38,55 @@
   font-size: 28px;
 }
 
+.nav-item:last-child {
+  display: none;
+  cursor: pointer;
+}
+
+.user-cell {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  font-weight: 600;
+  padding: 5px;
+  
+}
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border: solid 1px;
+  border-radius: 5px;
+}
+
+.render-per-user {
+  width: 90px;
+  height: 42px;
+  margin: 5px;
+}
+
+.create-task-input {
+  font-weight: 600;
+  width: 364px;
+  outline: none;
+  border: none;
+}
+
+.current-description{
+  width: 100%;
+}
+
+.task-description-input{
+  font-weight: 600;
+  width: 100%;
+  min-height: 200px;
+  border: none;
+  border-bottom: solid 1px;
+  overflow-x: hidden;
+}
+
 .dropdown-custom {
   display: flex;
   align-items: baseline;
@@ -107,15 +156,14 @@
   justify-content: center;
 } */
 
-.modal-footer {
-  /* display: none; */
-}
-
 .modal-dialog {
   max-width: initial;
   margin: 1.75rem;
 }
 
+.modal-title {
+  margin-right: 16px;
+}
 .fixed-bottom {
   display: flex;
   flex-direction: row;

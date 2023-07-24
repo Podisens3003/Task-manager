@@ -1,12 +1,7 @@
 import { appState } from "../app";
-
-// import { appState, showToast } from "../app";
 import { User } from "../models/User";
 import * as bootstrap from "bootstrap/dist/js/bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-// import { greeting } from "../app";
-
 
 export const authUser = function (login, password) {
   const user = new User(login, password);
@@ -15,7 +10,7 @@ export const authUser = function (login, password) {
 
   if (!userFromStorage) {
     showToast('Не правильно введен пароль или логин', 'red');
-    return null;
+    return false;
   }
   appState.currentUser = userFromStorage;
   showToast(`Здравствуйте, ${login}`, 'green');
