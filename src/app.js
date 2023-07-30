@@ -31,19 +31,18 @@ function handleUserLogin(e) {
   const formData = new FormData(document.querySelector("#app-login-form"));
   const login = formData.get("login");
   const password = formData.get("password");
-  const isUserAuthed = authUser('test', 'qwerty123'); // FIXME: bruh
+  const isUserAuthed = authUser(login, password);
 
   let fieldHTMLContent = isUserAuthed ? taskFieldTemplate : noAccessTemplate;
 
   document.querySelector("#content").innerHTML = fieldHTMLContent;
 
   if (isUserAuthed) {
-    addTasksToState(isUserAuthed);
+    addTasksToState();
     renderTasks();
     renderAvatar();
     renderNavBar();
     greeting(appState.currentUser.login);
-    console.log("appState", appState.currentUser);
   }
 }
 

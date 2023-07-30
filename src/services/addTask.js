@@ -10,7 +10,7 @@ export function addTasksToState() {
   appState.tasks = getFromStorage("tasks");
 }
 
-export function renderTasks(isUserAuthed) {
+export function renderTasks() {
   for (let status in appState.tasks) {
     const todos = document.querySelector(`#${status}`);
     todos.innerHTML = null;
@@ -22,9 +22,10 @@ export function renderTasks(isUserAuthed) {
       todo.innerText = task.title;
       todo.style.position = "relative";
 
-
-      const author = renderUserName(task.authorId);
-      todo.appendChild(author);
+      if(appState.currentUser.role === 'admin'){
+        const author = renderUserName(task.authorId);
+        todo.appendChild(author);
+      }
       todos.appendChild(todo);
     });
   }
@@ -41,7 +42,6 @@ function listenAddTaskClick() {
       let currentTaskList = ev.target.previousElementSibling;
       let changeTask = taskStatuses.indexOf(currentTaskList.id) - 1;
       let tasksFromPreviousStatus = appState.tasks[taskStatuses[changeTask]];
-      console.log('tasksFromPreviousStatus',tasksFromPreviousStatus);
       if (tasksFromPreviousStatus && tasksFromPreviousStatus.length === 0)
         return;
 
@@ -52,7 +52,6 @@ function listenAddTaskClick() {
         let selectedTask = tasksFromPreviousStatus.find(
           (task) => task.id === dropdownSelector.id
         );
-        console.log(selectedTask);
         UserTask.delete(selectedTask);
         selectedTask.status = currentTaskList.id;
         UserTask.save(selectedTask);
@@ -86,10 +85,7 @@ function setTaskTemplate(currentTaskList, button) {
 
   const newTaskInput = currentTaskList.querySelector(".create-task-input");
   const newTaskField = currentTaskList.querySelector(".new-task-backlog");
-  // console.log('newTaskInput', newTaskInput);
-  // console.log('newTaskField', newTaskField);
   newTaskInput.addEventListener('blur', (e) => {
-    console.log('title', !newTaskInput.value.trim());
 
     if(!newTaskInput.value.trim()) {
       newTaskField.remove();
@@ -138,7 +134,6 @@ function setTaskTemplate(currentTaskList, button) {
 
 function setDropdown(tasksFromPreviousStatus, currentTaskList, button) {
   currentTaskList.innerHTML += tasksDropdownTemplate;
-  console.log("tasksFromPreviousStatus", tasksFromPreviousStatus);
 
   let ul = document.querySelector(".dropdown-tasks");
   tasksFromPreviousStatus.forEach((task) => {
@@ -159,7 +154,6 @@ function setDropdown(tasksFromPreviousStatus, currentTaskList, button) {
       let selectedTask = tasksFromPreviousStatus.find(
         (task) => task.id === dropdownSelector.id
       );
-      console.log(selectedTask);
       UserTask.delete(selectedTask);
       selectedTask.status = currentTaskList.id;
       UserTask.save(selectedTask);
@@ -230,7 +224,6 @@ function editTaskDescription(clickedItem, saveChanges, edit) {
 }
 
 function deleteTask(clickedItem, modal) {
-  console.log("click", clickedItem);
   UserTask.delete(clickedItem);
   addTasksToState();
   renderTasks();

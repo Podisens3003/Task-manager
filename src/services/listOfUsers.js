@@ -13,7 +13,6 @@ export function renderNavBar() {
 }
 
 function generateListOfUsers() {
-  console.log('bruh')
   appState.usersPoppupRef && appState.usersPoppupRef.hide();
 
   document.querySelector(".list-of-users").innerHTML = listOfUsersPopupTemplate;
