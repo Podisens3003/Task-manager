@@ -31,14 +31,14 @@ function handleUserLogin(e) {
   const formData = new FormData(document.querySelector("#app-login-form"));
   const login = formData.get("login");
   const password = formData.get("password");
-  const isUserAuthed = authUser(login, password); 
+  const isUserAuthed = authUser('test', 'qwerty123'); // FIXME: bruh
 
   let fieldHTMLContent = isUserAuthed ? taskFieldTemplate : noAccessTemplate;
 
   document.querySelector("#content").innerHTML = fieldHTMLContent;
 
   if (isUserAuthed) {
-    addTasksToState();
+    addTasksToState(isUserAuthed);
     renderTasks();
     renderAvatar();
     renderNavBar();

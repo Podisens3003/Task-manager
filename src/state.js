@@ -7,6 +7,7 @@ export class State {
       inProgress: [],
       finished: [],
     };
+    this.usersPoppupRef = null;
   }
 
   set currentUser(user) {
@@ -38,5 +39,13 @@ export class State {
   
   get tasks() {
     return this._tasks;
+  }
+  
+  set usersPoppupRef(popupRef) {
+    this._usersPoppupRef = popupRef;
+  }
+
+  get usersPoppupRef() {
+    return this._usersPoppupRef;
   }
 }

@@ -10,16 +10,21 @@ export function addTasksToState() {
   appState.tasks = getFromStorage("tasks");
 }
 
-export function renderTasks() {
+export function renderTasks(isUserAuthed) {
   for (let status in appState.tasks) {
     const todos = document.querySelector(`#${status}`);
     todos.innerHTML = null;
-
     appState.tasks[status].forEach((task) => {
       const todo = document.createElement("div");
       todo.classList.add("p-2", "mb-3", "bg-light", "task-item");
+      todo.style.wordWrap = 'break-word';
       todo.id = task.id;
       todo.innerText = task.title;
+      todo.style.position = "relative";
+
+
+      const author = renderUserName(task.authorId);
+      todo.appendChild(author);
       todos.appendChild(todo);
     });
   }
@@ -36,7 +41,7 @@ function listenAddTaskClick() {
       let currentTaskList = ev.target.previousElementSibling;
       let changeTask = taskStatuses.indexOf(currentTaskList.id) - 1;
       let tasksFromPreviousStatus = appState.tasks[taskStatuses[changeTask]];
-
+      console.log('tasksFromPreviousStatus',tasksFromPreviousStatus);
       if (tasksFromPreviousStatus && tasksFromPreviousStatus.length === 0)
         return;
 
@@ -67,6 +72,7 @@ function listenAddTaskClick() {
       button.classList.add("btn-primary");
       button.disabled = true;
 
+
       // вставляем шаблон в поле тасок
       currentTaskList.id === "backlog"
         ? setTaskTemplate(currentTaskList, button)
@@ -76,15 +82,46 @@ function listenAddTaskClick() {
 }
 
 function setTaskTemplate(currentTaskList, button) {
-  console.log("currentTaskList", currentTaskList);
-
   currentTaskList.innerHTML += backlogTaskTemplate;
-  button.disabled = false;
-  button.onclick = (e) => {
-    const title = currentTaskList.querySelector(".create-task-input").value;
 
+  const newTaskInput = currentTaskList.querySelector(".create-task-input");
+  const newTaskField = currentTaskList.querySelector(".new-task-backlog");
+  // console.log('newTaskInput', newTaskInput);
+  // console.log('newTaskField', newTaskField);
+  newTaskInput.addEventListener('blur', (e) => {
+    console.log('title', !newTaskInput.value.trim());
+
+    if(!newTaskInput.value.trim()) {
+      newTaskField.remove();
+      button.classList.remove("btn-primary");
+      button.innerText = "+ Add card";
+      button.disabled = false;
+
+      renderTasks();
+      return;
+    }
     const task = new UserTask(
-      `${title}`,
+      `${newTaskInput.value}`,
+      "",
+      "backlog",
+      `${appState.currentUser.id}`
+    );
+    UserTask.save(task);
+    addTasksToState();
+    button.onclick = null;
+    renderTasks();
+      
+    button.classList.remove("btn-primary");
+    button.innerText = "+ Add card";
+    
+  }) 
+
+
+  button.disabled = false;
+  button.onclick = () => {
+    if (!newTaskInput.value.trim()) return;
+    const task = new UserTask(
+      `${newTaskInput.value}`,
       "",
       "backlog",
       `${appState.currentUser.id}`
@@ -118,7 +155,25 @@ function setDropdown(tasksFromPreviousStatus, currentTaskList, button) {
       dropdownSelector.innerText = ev.target.innerText;
       dropdownSelector.id = ev.target.id;
       button.disabled = false;
+      
+      let selectedTask = tasksFromPreviousStatus.find(
+        (task) => task.id === dropdownSelector.id
+      );
+      console.log(selectedTask);
+      UserTask.delete(selectedTask);
+      selectedTask.status = currentTaskList.id;
+      UserTask.save(selectedTask);
+
+      addTasksToState();
+      button.onclick = null;
+      renderTasks();
+
+      button.innerText = "+ Add card";
+      button.classList.remove("btn-primary");
+      return;
+
     });
+    
   });
 }
 
@@ -180,4 +235,19 @@ function deleteTask(clickedItem, modal) {
   addTasksToState();
   renderTasks();
   modal.hide();
+}
+
+function renderUserName(id) {
+  let arrOfUsers = getFromStorage('users');
+  const loginUser = arrOfUsers.find(user => user.id === id)?.login;
+  const name = document.createElement('span');
+  name.classList.add('label-login-user');
+  name.style.position = "absolute";
+  name.style.top = "-10px";
+  name.style.right = "7px";
+  name.style.color = "blue";
+
+
+  name.innerText = loginUser;
+  return name
 }
