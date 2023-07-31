@@ -1,8 +1,10 @@
 import { appState } from "../app";
-import listOfUsersPopupTemplate from "../templates/usersPopup.html";
-import * as bootstrap from "bootstrap/dist/js/bootstrap";
 import { getFromStorage } from "../utils";
 import { User } from "../models/User";
+import { UserTask } from "../models/Tasks";
+import { renderTasks , addTasksToState } from "../services/addTask.js";
+import listOfUsersPopupTemplate from "../templates/usersPopup.html";
+import * as bootstrap from "bootstrap/dist/js/bootstrap";
 
 export function renderNavBar() {
   if (appState.currentUser.role === "admin") {
@@ -116,5 +118,11 @@ function deleteUser(ev) {
   const selectedUser = localStorageUsers.find(user => user.id === userId);
   User.delete(selectedUser);
 
+  let localStorageTasks = getFromStorage('tasks');
+  const loginUser = localStorageTasks.filter(task => task.authorId === userId);
+  loginUser.forEach(task => {UserTask.delete(task)})
+
+  addTasksToState();
+  renderTasks();
   generateListOfUsers();
 }

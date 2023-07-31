@@ -205,7 +205,7 @@ function listenTaskClick() {
   });
 }
 
-function renderFooter() {
+export function renderFooter() {
   let activeTasks = appState.tasks.backlog.length;
   document.querySelector(".active-tasks").innerHTML = activeTasks;
   let finisedTasks = appState.tasks.finished.length;
@@ -220,6 +220,11 @@ function renderFooter() {
 function editTaskDescription(clickedItem, saveChanges, edit) {
   saveChanges.addEventListener("click", (ev) => {
     clickedItem.description = edit.value;
+    let newDescription = clickedItem;
+    UserTask.delete(clickedItem);
+    UserTask.save(newDescription)
+    addTasksToState();
+    renderTasks();
   });
 }
 

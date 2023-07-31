@@ -11,7 +11,7 @@ import { UserTask } from "./models/Tasks";
 import { generateTestUser, generateTestTasks } from "./utils";
 import { State } from "./state";
 import { authUser } from "./services/auth";
-import { addTasksToState, renderTasks } from "./services/addTask";
+import { addTasksToState, renderTasks, renderFooter } from "./services/addTask";
 import { renderNavBar } from "./services/listOfUsers"
 
 export const appState = new State();
@@ -54,21 +54,7 @@ function greeting(login) {
 function renderAvatar() {
   navbarSupportedContent.removeChild(document.querySelector("#app-login-form"));
   navbarSupportedContent.innerHTML += loggedUserTemplate;
-
-  if (appState.currentUser.role === "admin") {
-    const addUserOption = document.createElement("li");
-    addUserOption.innerText = "Добавить пользователя";
-    addUserOption.classList.add("dropdown-item", "add-new-user");
-
-    const avatarDropdownOptions = document.querySelector(
-      "#logged-user .dropdown-menu"
-    );
-    avatarDropdownOptions.appendChild(addUserOption);
-    document.querySelector(".add-new-user").addEventListener("click", () => {
-
-    });
-  }
-
+  
   document.querySelector(".logout").addEventListener("click", logOut);
 
   listenAvatarClick();
@@ -82,6 +68,7 @@ function logOut() {
   document.querySelector("#app-login-form").addEventListener("submit", handleUserLogin);
 
   document.querySelector("#content").innerHTML = null;
+  renderFooter();
 }
 
 function listenAvatarClick() {
