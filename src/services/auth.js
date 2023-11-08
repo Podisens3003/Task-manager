@@ -2,11 +2,14 @@ import { appState } from "../app";
 import { User } from "../models/User";
 import * as bootstrap from "bootstrap/dist/js/bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { stringify } from "uuid";
 
 export const authUser = function (login, password) {
   const user = new User(login, password);
   const userFromStorage = user.hasAccess;
-
+  if(userFromStorage){
+    setCookie(JSON.stringify({login: login, password: password}));
+  }
 
   if (!userFromStorage) {
     showToast('Не правильно введен пароль или логин', 'red');
@@ -24,4 +27,31 @@ function showToast(message, toastColor) {
   toastBody.style.backgroundColor = toastColor;
   const toast = new bootstrap.Toast(toastElem)
   toast.show();
+}
+
+export function getCookie(value) {
+  let matches = document.cookie.match(new RegExp(
+    "(?:^|; )" + value.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+  ));
+  return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+function setCookie(value, maxAge = 3600*7){
+  let options = {
+    user: value,
+    path: '/',
+    
+    'max-age': maxAge,
+  }
+  let updatedCookie = '';
+
+  for (let optionKey in options){
+    updatedCookie += optionKey + "=" + options[optionKey] + "; " ;
+  }
+
+  document.cookie = updatedCookie;
+}
+
+export function deleteCookie(name){
+  setCookie(name, -1);
 }

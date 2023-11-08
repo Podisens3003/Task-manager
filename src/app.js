@@ -10,29 +10,44 @@ import { User } from "./models/User";
 import { UserTask } from "./models/Tasks";
 import { generateTestUser, generateTestTasks } from "./utils";
 import { State } from "./state";
-import { authUser } from "./services/auth";
+import { authUser, deleteCookie, getCookie } from "./services/auth";
 import { addTasksToState, renderTasks, renderFooter } from "./services/addTask";
-import { renderNavBar } from "./services/listOfUsers"
+import { renderNavBar } from "./services/listOfUsers";
 
 export const appState = new State();
 
-const navbarSupportedContent = document.querySelector("#navbarSupportedContent");
-
+const navbarSupportedContent = document.querySelector(
+  "#navbarSupportedContent"
+);
 navbarSupportedContent.innerHTML += loginFormTemplate;
 const loginForm = document.querySelector("#app-login-form");
 
+if (getCookie("user")) getInfoFromCookie();
 generateTestUser(User);
 generateTestTasks(UserTask);
 
 loginForm.addEventListener("submit", handleUserLogin);
+
+const getInfoFromCookie = () => {
+  const cookie = JSON.parse(getCookie("user"));
+  renderPage(cookie.login, cookie.password);
+};
 
 function handleUserLogin(e) {
   e.preventDefault();
   const formData = new FormData(document.querySelector("#app-login-form"));
   const login = formData.get("login");
   const password = formData.get("password");
-  const isUserAuthed = authUser(login, password);
+  renderPage(login, password);
+}
 
+function greeting(login) {
+  const name = document.querySelector(".user-name");
+  name.innerText = login;
+}
+
+function renderPage(login, password) {
+  const isUserAuthed = authUser(login, password);
   let fieldHTMLContent = isUserAuthed ? taskFieldTemplate : noAccessTemplate;
 
   document.querySelector("#content").innerHTML = fieldHTMLContent;
@@ -46,26 +61,24 @@ function handleUserLogin(e) {
   }
 }
 
-function greeting(login) {
-  const name = document.querySelector(".user-name");
-  name.innerText = login;
-}
-
 function renderAvatar() {
   navbarSupportedContent.removeChild(document.querySelector("#app-login-form"));
   navbarSupportedContent.innerHTML += loggedUserTemplate;
-  
+
   document.querySelector(".logout").addEventListener("click", logOut);
 
   listenAvatarClick();
 }
 
 function logOut() {
+  deleteCookie(getCookie("user"));
   appState.currentUser = null;
   appState.tasks = [];
   navbarSupportedContent.removeChild(document.querySelector("#logged-user"));
   navbarSupportedContent.innerHTML += loginFormTemplate;
-  document.querySelector("#app-login-form").addEventListener("submit", handleUserLogin);
+  document
+    .querySelector("#app-login-form")
+    .addEventListener("submit", handleUserLogin);
 
   document.querySelector("#content").innerHTML = null;
   renderFooter();
