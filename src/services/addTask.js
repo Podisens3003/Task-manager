@@ -5,6 +5,13 @@ import tasksDropdownTemplate from "../templates/tasksDropdown.html";
 import backlogTaskTemplate from "../templates/backlogTask.html";
 
 import * as bootstrap from "bootstrap/dist/js/bootstrap";
+import {
+  dragoverHandler,
+  dragstartHandler,
+  dropHandler,
+  gragenterHandler,
+  gragleaveHandler,
+} from "./dragHandlers";
 
 export function addTasksToState() {
   appState.tasks = getFromStorage("tasks");
@@ -14,15 +21,21 @@ export function renderTasks() {
   for (let status in appState.tasks) {
     const todos = document.querySelector(`#${status}`);
     todos.innerHTML = null;
+    todos.ondragover = dragoverHandler;
+    todos.ondragenter = gragenterHandler;
+    todos.ondragleave = gragleaveHandler;
+    todos.ondrop = dropHandler;
     appState.tasks[status].forEach((task) => {
       const todo = document.createElement("div");
       todo.classList.add("p-2", "mb-3", "bg-light", "task-item");
-      todo.style.wordWrap = 'break-word';
+      todo.style.wordWrap = "break-word";
       todo.id = task.id;
       todo.innerText = task.title;
       todo.style.position = "relative";
+      todo.draggable = true;
+      todo.ondragstart = dragstartHandler;
 
-      if(appState.currentUser.role === 'admin'){
+      if (appState.currentUser.role === "admin") {
         const author = renderUserName(task.authorId);
         todo.appendChild(author);
       }
@@ -71,7 +84,6 @@ function listenAddTaskClick() {
       button.classList.add("btn-primary");
       button.disabled = true;
 
-
       // вставляем шаблон в поле тасок
       currentTaskList.id === "backlog"
         ? setTaskTemplate(currentTaskList, button)
@@ -85,9 +97,8 @@ function setTaskTemplate(currentTaskList, button) {
 
   const newTaskInput = currentTaskList.querySelector(".create-task-input");
   const newTaskField = currentTaskList.querySelector(".new-task-backlog");
-  newTaskInput.addEventListener('blur', (e) => {
-
-    if(!newTaskInput.value.trim()) {
+  newTaskInput.addEventListener("blur", (e) => {
+    if (!newTaskInput.value.trim()) {
       newTaskField.remove();
       button.classList.remove("btn-primary");
       button.innerText = "+ Add card";
@@ -106,12 +117,10 @@ function setTaskTemplate(currentTaskList, button) {
     addTasksToState();
     button.onclick = null;
     renderTasks();
-      
+
     button.classList.remove("btn-primary");
     button.innerText = "+ Add card";
-    
-  }) 
-
+  });
 
   button.disabled = false;
   button.onclick = () => {
@@ -150,7 +159,7 @@ function setDropdown(tasksFromPreviousStatus, currentTaskList, button) {
       dropdownSelector.innerText = ev.target.innerText;
       dropdownSelector.id = ev.target.id;
       button.disabled = false;
-      
+
       let selectedTask = tasksFromPreviousStatus.find(
         (task) => task.id === dropdownSelector.id
       );
@@ -165,9 +174,7 @@ function setDropdown(tasksFromPreviousStatus, currentTaskList, button) {
       button.innerText = "+ Add card";
       button.classList.remove("btn-primary");
       return;
-
     });
-    
   });
 }
 
@@ -196,7 +203,9 @@ function listenTaskClick() {
         ".modal-footer > .btn-primary"
       );
 
-      buttonDelete.addEventListener("click", () => deleteTask(clickedItem, modal));
+      buttonDelete.addEventListener("click", () =>
+        deleteTask(clickedItem, modal)
+      );
 
       modal.show();
       editTaskDescription(clickedItem, saveChanges, edit);
@@ -222,7 +231,7 @@ function editTaskDescription(clickedItem, saveChanges, edit) {
     clickedItem.description = edit.value;
     let newDescription = clickedItem;
     UserTask.delete(clickedItem);
-    UserTask.save(newDescription)
+    UserTask.save(newDescription);
     addTasksToState();
     renderTasks();
   });
@@ -236,16 +245,15 @@ function deleteTask(clickedItem, modal) {
 }
 
 function renderUserName(id) {
-  let arrOfUsers = getFromStorage('users');
-  const loginUser = arrOfUsers.find(user => user.id === id)?.login;
-  const name = document.createElement('span');
-  name.classList.add('label-login-user');
+  let arrOfUsers = getFromStorage("users");
+  const loginUser = arrOfUsers.find((user) => user.id === id)?.login;
+  const name = document.createElement("span");
+  name.classList.add("label-login-user");
   name.style.position = "absolute";
   name.style.top = "-10px";
   name.style.right = "7px";
   name.style.color = "blue";
 
-
   name.innerText = loginUser;
-  return name
+  return name;
 }

@@ -22,16 +22,16 @@ const navbarSupportedContent = document.querySelector(
 navbarSupportedContent.innerHTML += loginFormTemplate;
 const loginForm = document.querySelector("#app-login-form");
 
+const getInfoFromCookie = () => {
+  const cookie = JSON.parse(getCookie("user"));
+  renderPage(cookie.login, cookie.password);
+};
+
 if (getCookie("user")) getInfoFromCookie();
 generateTestUser(User);
 generateTestTasks(UserTask);
 
 loginForm.addEventListener("submit", handleUserLogin);
-
-const getInfoFromCookie = () => {
-  const cookie = JSON.parse(getCookie("user"));
-  renderPage(cookie.login, cookie.password);
-};
 
 function handleUserLogin(e) {
   e.preventDefault();
